@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from '../api/axios';
 
-export default function TagManager({ tags, onTagsChange }) {
+export default function TagManager({ tags, onTagsChange, dark }) {
   const [newTag, setNewTag] = useState('');
   const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState('');
@@ -47,14 +47,26 @@ export default function TagManager({ tags, onTagsChange }) {
   };
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>Manage Tags</h3>
+    <div style={{
+      ...styles.container,
+      backgroundColor: dark ? '#1a1a2e' : '#fff',
+      borderColor: dark ? '#2d2d44' : '#e5e7eb'
+    }}>
+      <h3 style={{
+        ...styles.title,
+        color: dark ? '#e5e7eb' : '#1a1a1a'
+      }}>Manage Tags</h3>
 
       {error && <div style={styles.error}>{error}</div>}
 
       <form onSubmit={handleCreate} style={styles.form}>
         <input
-          style={styles.input}
+          style={{
+            ...styles.input,
+            backgroundColor: dark ? '#0f0f1a' : '#fff',
+            color: dark ? '#e5e7eb' : '#1a1a1a',
+            borderColor: dark ? '#2d2d44' : '#d1d5db'
+          }}
           type="text"
           placeholder="New tag name"
           value={newTag}
@@ -84,7 +96,10 @@ export default function TagManager({ tags, onTagsChange }) {
                 </>
               ) : (
                 <>
-                  <span style={styles.tagName}>#{tag.name}</span>
+                  <span style={{
+                    ...styles.tagName,
+                    color: dark ? '#e5e7eb' : '#374151'
+                  }}>#{tag.name}</span>
                   <button style={styles.editBtn} onClick={() => {
                     setEditId(tag._id);
                     setEditName(tag.name);

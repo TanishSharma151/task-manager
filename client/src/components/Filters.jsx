@@ -1,15 +1,28 @@
-export default function Filters({ filters, setFilters, tags }) {
+export default function Filters({ filters, setFilters, tags, dark }) {
   return (
-    <div style={styles.container}>
+    <div style={{
+      ...styles.container,
+      backgroundColor: dark ? '#1a1a2e' : '#fff',
+    }}>
       <input
-        style={styles.search}
+        style={{
+          ...styles.search,
+          backgroundColor: dark ? '#0f0f1a' : '#fff',
+          color: dark ? '#e5e7eb' : '#1a1a1a',
+          borderColor: dark ? '#2d2d44' : '#d1d5db'
+        }}
         type="text"
-        placeholder="Search tasks..."
+        placeholder="Search tasks"
         value={filters.search}
         onChange={e => setFilters({ ...filters, search: e.target.value })}
       />
       <select
-        style={styles.select}
+        style={{
+          ...styles.select,
+          backgroundColor: dark ? '#0f0f1a' : '#fff',
+          color: dark ? '#e5e7eb' : '#374151',
+          borderColor: dark ? '#2d2d44' : '#d1d5db'
+        }}
         value={filters.status}
         onChange={e => setFilters({ ...filters, status: e.target.value })}
       >
@@ -19,7 +32,12 @@ export default function Filters({ filters, setFilters, tags }) {
         <option value="done">Done</option>
       </select>
       <select
-        style={styles.select}
+        style={{
+          ...styles.select,
+          backgroundColor: dark ? '#0f0f1a' : '#fff',
+          color: dark ? '#e5e7eb' : '#374151',
+          borderColor: dark ? '#2d2d44' : '#d1d5db'
+        }}
         value={filters.priority}
         onChange={e => setFilters({ ...filters, priority: e.target.value })}
       >
@@ -29,7 +47,12 @@ export default function Filters({ filters, setFilters, tags }) {
         <option value="high">High</option>
       </select>
       <select
-        style={styles.select}
+        style={{
+          ...styles.select,
+          backgroundColor: dark ? '#0f0f1a' : '#fff',
+          color: dark ? '#e5e7eb' : '#374151',
+          borderColor: dark ? '#2d2d44' : '#d1d5db'
+        }}
         value={filters.tag}
         onChange={e => setFilters({ ...filters, tag: e.target.value })}
       >
@@ -39,7 +62,12 @@ export default function Filters({ filters, setFilters, tags }) {
         ))}
       </select>
       <button
-        style={styles.clearBtn}
+        style={{
+          ...styles.clearBtn,
+          backgroundColor: dark ? '#1a1a2e' : '#f3f4f6',
+          color: dark ? '#e5e7eb' : '#374151',
+          borderColor: dark ? '#2d2d44' : '#d1d5db'
+        }}
         onClick={() => setFilters({ status: '', priority: '', tag: '', search: '' })}
       >
         Clear

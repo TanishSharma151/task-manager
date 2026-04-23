@@ -7,6 +7,9 @@ import TagManager from '../components/TagManager';
 import Filters from '../components/Filters';
 
 export default function Dashboard() {
+  const [dark, setDark] = useState(
+    localStorage.getItem('darkMode') === 'true'
+  );
   const { user, logout } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [tags, setTags] = useState([]);
@@ -25,12 +28,14 @@ export default function Dashboard() {
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const params = {};
-      if (filters.status) params.status = filters.status;
-      if (filters.priority) params.priority = filters.priority;
-      if (filters.tag) params.tag = filters.tag;
-      if (filters.search) params.search = filters.search;
-      const res = await axios.get('/tasks', { params });
+      setError('');
+      const params = new URLSearchParams();
+      if (filters.status) params.append('status', filters.status);
+      if (filters.priority) params.append('priority', filters.priority);
+      if (filters.tag) params.append('tag', filters.tag);
+      if (filters.search) params.append('search', filters.search);
+
+      const res = await axios.get(`/tasks?${params.toString()}`);
       setTasks(res.data);
     } catch (err) {
       setError('Failed to load tasks');
@@ -86,9 +91,21 @@ export default function Dashboard() {
     }
   };
 
+  const handleReopen = async (id) => {
+    try {
+      await axios.patch(`/tasks/${id}/reopen`);
+      fetchTasks();
+    } catch (err) {
+      setError('Failed to reopen task');
+    }
+  };
+
   return (
-    <div style={styles.container}>
-      {/* Header */}
+    <div style={{
+      ...styles.container,
+      backgroundColor: dark ? '#0f0f1a' : '#f9fafb',
+      color: dark ? '#e5e7eb' : '#1a1a1a'
+    }}>
       <div style={styles.header}>
         <h1 style={styles.logo}>TaskManager</h1>
         <div style={styles.headerRight}>
@@ -96,24 +113,36 @@ export default function Dashboard() {
           <button style={styles.tagBtn} onClick={() => setShowTagManager(!showTagManager)}>
             Tags
           </button>
+          <button style={styles.tagBtn} onClick={() => {
+            const newDark = !dark;
+            setDark(newDark);
+            localStorage.setItem('darkMode', newDark);
+          }}>
+            {dark ? '☀️ Light' : '🌙 Dark'}
+          </button>
           <button style={styles.logoutBtn} onClick={logout}>
             Logout
           </button>
         </div>
       </div>
 
-      <div style={styles.main}>
-        {/* Tag Manager */}
+      <div style={{
+        ...styles.main,
+        backgroundColor: dark ? '#0f0f1a' : 'transparent'
+      }}>
         {showTagManager && (
-          <TagManager tags={tags} onTagsChange={fetchTags} />
+          <TagManager tags={tags} onTagsChange={fetchTags} dark={dark} />
         )}
 
-        {/* Filters */}
-        <Filters filters={filters} setFilters={setFilters} tags={tags} />
+        <Filters filters={filters} setFilters={setFilters} tags={tags} dark={dark} />
 
-        {/* Add Task Button */}
         <div style={styles.taskHeader}>
-          <h2 style={styles.taskTitle}>My Tasks</h2>
+          <h2 style={{
+            ...styles.taskTitle,
+            color: dark ? '#e5e7eb' : '#1a1a1a'
+          }}>
+            My Tasks
+          </h2>
           <button style={styles.addBtn} onClick={() => {
             setEditTask(null);
             setShowTaskForm(true);
@@ -122,7 +151,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Task Form Modal */}
         {showTaskForm && (
           <TaskForm
             tags={tags}
@@ -132,17 +160,22 @@ export default function Dashboard() {
               setShowTaskForm(false);
               setEditTask(null);
             }}
+            onTagsRefresh={fetchTags}
+            dark={dark}
           />
         )}
 
-        {/* Error */}
         {error && <div style={styles.error}>{error}</div>}
 
-        {/* Task List */}
         {loading ? (
           <div style={styles.center}>Loading tasks...</div>
         ) : tasks.length === 0 ? (
-          <div style={styles.empty}>
+          <div style={{
+            ...styles.empty,
+            backgroundColor: dark ? '#1a1a2e' : '#fff',
+            borderColor: dark ? '#2d2d44' : '#e5e7eb',
+            color: dark ? '#9ca3af' : '#9ca3af'
+          }}>
             <p>No tasks found. Create your first task!</p>
           </div>
         ) : (
@@ -151,6 +184,8 @@ export default function Dashboard() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onMarkDone={handleMarkDone}
+            onReopen={handleReopen}
+            dark={dark}
           />
         )}
       </div>
@@ -159,67 +194,104 @@ export default function Dashboard() {
 }
 
 const styles = {
-  container: { minHeight: '100vh', backgroundColor: '#f9fafb' },
+  container: {
+    minHeight: '100vh',
+    backgroundColor: '#f9fafb',
+    transition: 'all 0.3s ease'
+  },
   header: {
-    backgroundColor: '#4f46e5',
+    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
     padding: '1rem 2rem',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    boxShadow: '0 4px 20px rgba(79, 70, 229, 0.3)'
   },
-  logo: { color: '#fff', margin: 0, fontSize: '1.5rem' },
+  logo: {
+    color: '#fff',
+    margin: 0,
+    fontSize: '1.5rem',
+    fontWeight: 700,
+    letterSpacing: '-0.5px'
+  },
   headerRight: { display: 'flex', alignItems: 'center', gap: '1rem' },
-  userName: { color: '#e0e7ff', fontSize: '0.875rem' },
+  userName: {
+    color: '#e0e7ff',
+    fontSize: '0.875rem',
+    fontWeight: 500
+  },
   tagBtn: {
     padding: '0.5rem 1rem',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     color: '#fff',
-    border: '1px solid #fff',
-    borderRadius: '6px',
+    border: '1px solid rgba(255,255,255,0.3)',
+    borderRadius: '8px',
     cursor: 'pointer',
-    fontSize: '0.875rem'
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    backdropFilter: 'blur(10px)'
   },
   logoutBtn: {
     padding: '0.5rem 1rem',
     backgroundColor: '#fff',
     color: '#4f46e5',
     border: 'none',
-    borderRadius: '6px',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 600,
-    fontSize: '0.875rem'
+    fontSize: '0.875rem',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
   },
-  main: { maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' },
+  main: {
+    maxWidth: '960px',
+    margin: '0 auto',
+    padding: '2rem 1rem'
+  },
   taskHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '1rem'
+    marginBottom: '1.25rem'
   },
-  taskTitle: { margin: 0, color: '#1a1a1a' },
+  taskTitle: {
+    margin: 0,
+    color: '#1a1a1a',
+    fontSize: '1.25rem',
+    fontWeight: 700
+  },
   addBtn: {
     padding: '0.625rem 1.25rem',
-    backgroundColor: '#4f46e5',
+    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
     color: '#fff',
     border: 'none',
-    borderRadius: '6px',
+    borderRadius: '8px',
     cursor: 'pointer',
-    fontWeight: 600
+    fontWeight: 600,
+    fontSize: '0.875rem',
+    boxShadow: '0 4px 12px rgba(79, 70, 229, 0.4)'
   },
   error: {
     backgroundColor: '#fee2e2',
     color: '#dc2626',
-    padding: '0.75rem',
-    borderRadius: '6px',
-    marginBottom: '1rem'
+    padding: '0.75rem 1rem',
+    borderRadius: '8px',
+    marginBottom: '1rem',
+    fontSize: '0.875rem',
+    border: '1px solid #fecaca'
   },
-  center: { textAlign: 'center', padding: '2rem', color: '#666' },
-  empty: {
+  center: {
     textAlign: 'center',
     padding: '3rem',
     color: '#9ca3af',
+    fontSize: '0.875rem'
+  },
+  empty: {
+    textAlign: 'center',
+    padding: '4rem 2rem',
+    color: '#9ca3af',
     backgroundColor: '#fff',
-    borderRadius: '8px',
-    border: '2px dashed #e5e7eb'
+    borderRadius: '12px',
+    border: '2px dashed #e5e7eb',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
   }
 };

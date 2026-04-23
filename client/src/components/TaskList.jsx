@@ -10,18 +10,21 @@ const statusColors = {
   'done': '#10b981'
 };
 
-export default function TaskList({ tasks, onEdit, onDelete, onMarkDone }) {
+export default function TaskList({ tasks, onEdit, onDelete, onMarkDone, onReopen, dark }) {
   return (
     <div style={styles.list}>
       {tasks.map(task => (
         <div key={task._id} style={{
           ...styles.card,
+          backgroundColor: dark ? '#1a1a2e' : '#fff',
+          borderColor: dark ? '#2d2d44' : '#e5e7eb',
           opacity: task.status === 'done' ? 0.7 : 1
         }}>
           <div style={styles.cardHeader}>
             <div style={styles.titleRow}>
               <h3 style={{
                 ...styles.title,
+                color: dark ? '#e5e7eb' : '#1a1a1a',
                 textDecoration: task.status === 'done' ? 'line-through' : 'none'
               }}>
                 {task.title}
@@ -44,9 +47,13 @@ export default function TaskList({ tasks, onEdit, onDelete, onMarkDone }) {
               </div>
             </div>
             <div style={styles.actions}>
-              {task.status !== 'done' && (
+              {task.status !== 'done' ? (
                 <button style={styles.doneBtn} onClick={() => onMarkDone(task._id)}>
                   ✓ Done
+                </button>
+              ) : (
+                <button style={styles.reopenBtn} onClick={() => onReopen(task._id)}>
+                  ↩ Reopen
                 </button>
               )}
               <button style={styles.editBtn} onClick={() => onEdit(task)}>
@@ -112,6 +119,16 @@ const styles = {
     backgroundColor: '#ecfdf5',
     color: '#10b981',
     border: '1px solid #10b981',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '0.8rem',
+    fontWeight: 600
+  },
+  reopenBtn: {
+    padding: '0.375rem 0.75rem',
+    backgroundColor: '#fffbeb',
+    color: '#d97706',
+    border: '1px solid #d97706',
     borderRadius: '6px',
     cursor: 'pointer',
     fontSize: '0.8rem',

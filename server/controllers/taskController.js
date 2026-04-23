@@ -1,6 +1,6 @@
 const Task = require('../models/Task');
 
-// Get all tasks with filters
+
 exports.getTasks = async (req, res) => {
   try {
     const { status, priority, tag, search } = req.query;
@@ -21,7 +21,7 @@ exports.getTasks = async (req, res) => {
   }
 };
 
-// Create task
+
 exports.createTask = async (req, res) => {
   try {
     const { title, description, dueDate, priority, status, tags } = req.body;
@@ -47,7 +47,7 @@ exports.createTask = async (req, res) => {
   }
 };
 
-// Update task
+
 exports.updateTask = async (req, res) => {
   try {
     const task = await Task.findOne({ _id: req.params.id, userId: req.user.id });
@@ -68,7 +68,7 @@ exports.updateTask = async (req, res) => {
   }
 };
 
-// Delete task
+
 exports.deleteTask = async (req, res) => {
   try {
     const task = await Task.findOne({ _id: req.params.id, userId: req.user.id });
@@ -84,7 +84,7 @@ exports.deleteTask = async (req, res) => {
   }
 };
 
-// Mark done
+
 exports.markDone = async (req, res) => {
   try {
     const task = await Task.findOne({ _id: req.params.id, userId: req.user.id });
@@ -96,6 +96,18 @@ exports.markDone = async (req, res) => {
     task.status = 'done';
     await task.save();
 
+    res.status(200).json(task);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.reopenTask = async (req, res) => {
+  try {
+    const task = await Task.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    task.status = 'todo';
+    await task.save();
     res.status(200).json(task);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });

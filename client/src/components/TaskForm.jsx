@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from '../api/axios';
 
-export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
+export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefresh, dark }) {
   const [form, setForm] = useState({
     title: editTask?.title || '',
     description: editTask?.description || '',
@@ -40,6 +40,34 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
     }
   };
 
+  const handleAddSuggestedTag = async (tagName) => {
+    try {
+      const existing = tags.find(t =>
+        t.name.toLowerCase() === tagName.toLowerCase()
+      );
+
+      let tagId;
+      if (existing) {
+        tagId = existing._id;
+      } else {
+        const res = await axios.post('/tags', { name: tagName });
+        tagId = res.data._id;
+        if (onTagsRefresh) await onTagsRefresh();
+      }
+
+      setForm(prev => ({
+        ...prev,
+        tags: prev.tags.includes(tagId)
+          ? prev.tags
+          : [...prev.tags, tagId]
+      }));
+
+      setError('');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -65,8 +93,15 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
 
   return (
     <div style={styles.overlay}>
-      <div style={styles.modal}>
-        <h3 style={styles.title}>
+      <div style={{
+        ...styles.modal,
+        backgroundColor: dark ? '#1a1a2e' : '#fff',
+        color: dark ? '#e5e7eb' : '#1a1a1a'
+      }}>
+        <h3 style={{
+          ...styles.title,
+          color: dark ? '#e5e7eb' : '#1a1a1a'
+        }}>
           {editTask ? 'Edit Task' : 'New Task'}
         </h3>
 
@@ -74,10 +109,18 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
 
         <form onSubmit={handleSubmit}>
           <div style={styles.field}>
-            <label style={styles.label}>Title *</label>
+            <label style={{
+              ...styles.label,
+              color: dark ? '#9ca3af' : '#374151'
+            }}>Title *</label>
             <div style={styles.titleRow}>
               <input
-                style={{ ...styles.input, flex: 1 }}
+                style={{
+                  ...styles.input,
+                  backgroundColor: dark ? '#0f0f1a' : '#fff',
+                  color: dark ? '#e5e7eb' : '#1a1a1a',
+                  borderColor: dark ? '#2d2d44' : '#d1d5db'
+                }}
                 type="text"
                 placeholder="Task title"
                 value={form.title}
@@ -110,10 +153,16 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
               )}
               {aiSuggestions.tags?.length > 0 && (
                 <div>
-                  <p style={styles.aiLabel}>Suggested Tags:</p>
+                  <p style={styles.aiLabel}>Suggested Tags — click to add:</p>
                   <div style={styles.aiTags}>
                     {aiSuggestions.tags.map((tag, i) => (
-                      <span key={i} style={styles.aiTag}>#{tag}</span>
+                      <span
+                        key={i}
+                        style={styles.aiTag}
+                        onClick={() => handleAddSuggestedTag(tag)}
+                      >
+                        + #{tag}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -122,9 +171,19 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
           )}
 
           <div style={styles.field}>
-            <label style={styles.label}>Description</label>
+            <label style={{
+              ...styles.label,
+              color: dark ? '#9ca3af' : '#374151'
+            }}>Description</label>
             <textarea
-              style={{ ...styles.input, height: '80px', resize: 'vertical' }}
+              style={{
+                ...styles.input,
+                height: '80px',
+                resize: 'vertical',
+                backgroundColor: dark ? '#0f0f1a' : '#fff',
+                color: dark ? '#e5e7eb' : '#1a1a1a',
+                borderColor: dark ? '#2d2d44' : '#d1d5db'
+              }}
               placeholder="Optional description"
               value={form.description}
               onChange={e => setForm({ ...form, description: e.target.value })}
@@ -133,9 +192,17 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
 
           <div style={styles.row}>
             <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Priority</label>
+              <label style={{
+                ...styles.label,
+                color: dark ? '#9ca3af' : '#374151'
+              }}>Priority</label>
               <select
-                style={styles.input}
+                style={{
+                  ...styles.input,
+                  backgroundColor: dark ? '#0f0f1a' : '#fff',
+                  color: dark ? '#e5e7eb' : '#1a1a1a',
+                  borderColor: dark ? '#2d2d44' : '#d1d5db'
+                }}
                 value={form.priority}
                 onChange={e => setForm({ ...form, priority: e.target.value })}
               >
@@ -146,9 +213,17 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
             </div>
 
             <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Status</label>
+              <label style={{
+                ...styles.label,
+                color: dark ? '#9ca3af' : '#374151'
+              }}>Status</label>
               <select
-                style={styles.input}
+                style={{
+                  ...styles.input,
+                  backgroundColor: dark ? '#0f0f1a' : '#fff',
+                  color: dark ? '#e5e7eb' : '#1a1a1a',
+                  borderColor: dark ? '#2d2d44' : '#d1d5db'
+                }}
                 value={form.status}
                 onChange={e => setForm({ ...form, status: e.target.value })}
               >
@@ -159,9 +234,17 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
             </div>
 
             <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Due Date</label>
+              <label style={{
+                ...styles.label,
+                color: dark ? '#9ca3af' : '#374151'
+              }}>Due Date</label>
               <input
-                style={styles.input}
+                style={{
+                  ...styles.input,
+                  backgroundColor: dark ? '#0f0f1a' : '#fff',
+                  color: dark ? '#e5e7eb' : '#1a1a1a',
+                  borderColor: dark ? '#2d2d44' : '#d1d5db'
+                }}
                 type="date"
                 value={form.dueDate}
                 onChange={e => setForm({ ...form, dueDate: e.target.value })}
@@ -171,15 +254,23 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
 
           {tags.length > 0 && (
             <div style={styles.field}>
-              <label style={styles.label}>Tags</label>
+              <label style={{
+                ...styles.label,
+                color: dark ? '#9ca3af' : '#374151'
+              }}>Tags</label>
               <div style={styles.tagList}>
                 {tags.map(tag => (
                   <span
                     key={tag._id}
                     style={{
                       ...styles.tagChip,
-                      backgroundColor: form.tags.includes(tag._id) ? '#4f46e5' : '#f3f4f6',
-                      color: form.tags.includes(tag._id) ? '#fff' : '#374151'
+                      backgroundColor: form.tags.includes(tag._id)
+                        ? '#4f46e5'
+                        : dark ? '#2d2d44' : '#f3f4f6',
+                      color: form.tags.includes(tag._id)
+                        ? '#fff'
+                        : dark ? '#e5e7eb' : '#374151',
+                      border: dark ? '1px solid #3d3d54' : 'none'
                     }}
                     onClick={() => handleTagToggle(tag._id)}
                   >
@@ -191,7 +282,12 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel }) {
           )}
 
           <div style={styles.buttons}>
-            <button type="button" style={styles.cancelBtn} onClick={onCancel}>
+            <button type="button" style={{
+              ...styles.cancelBtn,
+              backgroundColor: dark ? '#2d2d44' : '#f3f4f6',
+              color: dark ? '#e5e7eb' : '#374151',
+              borderColor: dark ? '#3d3d54' : '#d1d5db'
+            }} onClick={onCancel}>
               Cancel
             </button>
             <button type="submit" style={styles.saveBtn} disabled={loading}>
@@ -294,10 +390,14 @@ const styles = {
   aiTag: {
     backgroundColor: '#ede9fe',
     color: '#7c3aed',
-    padding: '0.2rem 0.6rem',
+    padding: '0.3rem 0.8rem',
     borderRadius: '999px',
-    fontSize: '0.75rem',
-    fontWeight: 500
+    fontSize: '0.8rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
+    letterSpacing: '0'
   },
   row: { display: 'flex', gap: '1rem', flexWrap: 'wrap' },
   tagList: { display: 'flex', gap: '0.5rem', flexWrap: 'wrap' },
