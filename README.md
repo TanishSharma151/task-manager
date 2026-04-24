@@ -55,13 +55,15 @@ npm install
 cp .env.example .env
 # Fill in your values (MONGO_URI, JWT_SECRET, GROQ_API_KEY, CLIENT_URL)
 npm run dev
+```
 
-
+```
 cd client
 npm install
 cp .env.example .env
 # Set REACT_APP_API_URL=http://localhost:5000/api
 npm start
+```
 
 **server/.env**
 ```
@@ -95,9 +97,21 @@ REACT_APP_API_URL=http://localhost:5000/api
 
 ---
 
+## Next Steps & Future Enhancements
+- **Automated Reminders:** Implementing `node-cron` workers to scan for upcoming deadlines and trigger email alerts.
+- **Email Notifications:** Integrating the **Resend API** to proactively notify users of task due dates (an architecture I have successfully deployed in previous SLA-tracking projects).
+- **Push Notifications:** Using Web Push API for real-time browser alerts.
+
+---
+
 ## Author
 
 **Tanish Raj Sharma**  
 tanishrajsharma151@gmail.com  
 github.com/TanishSharma151  
 linkedin.com/in/tanish-raj-sharma-02933b27b
+
+---
+
+
+For a deep dive into the data model, indexing strategy, and scalability plans, see DESIGN.md.
