@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from '../api/axios';
 import TaskList from '../components/TaskList';
@@ -25,7 +25,7 @@ export default function Dashboard() {
     search: ''
   });
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -42,7 +42,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  },[filters]);
 
   const fetchTags = async () => {
     try {
@@ -100,6 +100,10 @@ export default function Dashboard() {
     }
   };
 
+  const refreshData = async () => {
+    await Promise.all([fetchTasks(), fetchTags()]);
+  };
+
   return (
     <div style={{
       ...styles.container,
@@ -131,7 +135,7 @@ export default function Dashboard() {
         backgroundColor: dark ? '#0f0f1a' : 'transparent'
       }}>
         {showTagManager && (
-          <TagManager tags={tags} onTagsChange={fetchTags} dark={dark} />
+          <TagManager tags={tags} onTagsChange={refreshData} dark={dark} />
         )}
 
         <Filters filters={filters} setFilters={setFilters} tags={tags} dark={dark} />

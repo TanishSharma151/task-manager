@@ -37,14 +37,17 @@ export default function TagManager({ tags, onTagsChange, dark }) {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this tag? It will be removed from all tasks.')) return;
-    try {
-      await axios.delete(`/tags/${id}`);
-      onTagsChange();
-    } catch (err) {
-      setError('Failed to delete tag');
-    }
-  };
+  if (!window.confirm('Delete this tag? It will be removed from all tasks.')) return;
+  setLoading(true); // Added loading state
+  try {
+    await axios.delete(`/tags/${id}`);
+    onTagsChange();
+  } catch (err) {
+    setError('Failed to delete tag');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={{

@@ -81,18 +81,18 @@ exports.updateTag = async (req, res) => {
 
 exports.deleteTag = async (req, res) => {
   try {
-    const tag = await Tag.findOne({ _id: req.params.id, userId: req.user.id });
+    const userId = req.user.id;
+    const tagId = req.params.id;
 
-    if (!tag) {
-      return res.status(404).json({ error: 'Tag not found' });
-    }
+    const tag = await Tag.findOne({ _id: tagId, userId });
+    if (!tag) return res.status(404).json({ error: 'Tag not found' });
 
     await Task.updateMany(
-      { tags: req.params.id, userId: req.user.id },
-      { $pull: { tags: req.params.id } }
+      { userId, tags: tagId },
+      { $pull: { tags: tagId } }
     );
 
-    await Tag.findByIdAndDelete(req.params.id);
+    await Tag.findByIdAndDelete(tagId);
     res.status(200).json({ message: 'Tag deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
