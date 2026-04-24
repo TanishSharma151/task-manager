@@ -31,6 +31,7 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefr
     try {
       setAiLoading(true);
       setAiSuggestions(null);
+      setError('');
       const res = await axios.post('/ai/suggest', { title: form.title });
       setAiSuggestions(res.data);
     } catch (err) {
@@ -64,7 +65,7 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefr
 
       setError('');
     } catch (err) {
-      console.error(err);
+      setError('Failed to add tag');
     }
   };
 
@@ -108,6 +109,7 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefr
         {error && <div style={styles.error}>{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          {/* Title */}
           <div style={styles.field}>
             <label style={{
               ...styles.label,
@@ -139,26 +141,48 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefr
 
           {/* AI Suggestions */}
           {aiSuggestions && (
-            <div style={styles.aiBox}>
-              <p style={styles.aiTitle}>✨ AI Suggestions</p>
+            <div style={{
+              ...styles.aiBox,
+              backgroundColor: dark ? '#2d2d44' : '#f5f3ff',
+              border: dark ? '1px solid #3d3d54' : '1px solid #ddd6fe'
+            }}>
+              <p style={{
+                ...styles.aiTitle,
+                color: dark ? '#a78bfa' : '#7c3aed'
+              }}>✨ AI Suggestions</p>
+
               {aiSuggestions.subtasks?.length > 0 && (
                 <div>
-                  <p style={styles.aiLabel}>Suggested Sub-tasks:</p>
+                  <p style={{
+                    ...styles.aiLabel,
+                    color: dark ? '#9ca3af' : '#374151'
+                  }}>Suggested Sub-tasks:</p>
                   <ul style={styles.aiList}>
                     {aiSuggestions.subtasks.map((s, i) => (
-                      <li key={i} style={styles.aiItem}>{s}</li>
+                      <li key={i} style={{
+                        ...styles.aiItem,
+                        color: dark ? '#e5e7eb' : '#4b5563'
+                      }}>{s}</li>
                     ))}
                   </ul>
                 </div>
               )}
+
               {aiSuggestions.tags?.length > 0 && (
                 <div>
-                  <p style={styles.aiLabel}>Suggested Tags — click to add:</p>
+                  <p style={{
+                    ...styles.aiLabel,
+                    color: dark ? '#9ca3af' : '#374151'
+                  }}>Suggested Tags — click to add:</p>
                   <div style={styles.aiTags}>
                     {aiSuggestions.tags.map((tag, i) => (
                       <span
                         key={i}
-                        style={styles.aiTag}
+                        style={{
+                          ...styles.aiTag,
+                          backgroundColor: dark ? '#3d3d54' : '#ede9fe',
+                          color: dark ? '#ddd6fe' : '#7c3aed'
+                        }}
                         onClick={() => handleAddSuggestedTag(tag)}
                       >
                         + #{tag}
@@ -170,6 +194,7 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefr
             </div>
           )}
 
+          {/* Description */}
           <div style={styles.field}>
             <label style={{
               ...styles.label,
@@ -190,6 +215,7 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefr
             />
           </div>
 
+          {/* Priority, Status, Due Date */}
           <div style={styles.row}>
             <div style={{ ...styles.field, flex: 1 }}>
               <label style={{
@@ -252,6 +278,7 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefr
             </div>
           </div>
 
+          {/* Tags */}
           {tags.length > 0 && (
             <div style={styles.field}>
               <label style={{
@@ -281,13 +308,18 @@ export default function TaskForm({ tags, editTask, onSaved, onCancel, onTagsRefr
             </div>
           )}
 
+          {/* Buttons */}
           <div style={styles.buttons}>
-            <button type="button" style={{
-              ...styles.cancelBtn,
-              backgroundColor: dark ? '#2d2d44' : '#f3f4f6',
-              color: dark ? '#e5e7eb' : '#374151',
-              borderColor: dark ? '#3d3d54' : '#d1d5db'
-            }} onClick={onCancel}>
+            <button
+              type="button"
+              style={{
+                ...styles.cancelBtn,
+                backgroundColor: dark ? '#2d2d44' : '#f3f4f6',
+                color: dark ? '#e5e7eb' : '#374151',
+                borderColor: dark ? '#3d3d54' : '#d1d5db'
+              }}
+              onClick={onCancel}
+            >
               Cancel
             </button>
             <button type="submit" style={styles.saveBtn} disabled={loading}>
@@ -312,7 +344,6 @@ const styles = {
     padding: '1rem'
   },
   modal: {
-    backgroundColor: '#fff',
     borderRadius: '8px',
     padding: '1.5rem',
     width: '100%',
@@ -320,7 +351,7 @@ const styles = {
     maxHeight: '90vh',
     overflowY: 'auto'
   },
-  title: { margin: '0 0 1rem', color: '#1a1a1a' },
+  title: { margin: '0 0 1rem' },
   error: {
     backgroundColor: '#fee2e2',
     color: '#dc2626',
@@ -334,7 +365,6 @@ const styles = {
     display: 'block',
     marginBottom: '0.5rem',
     fontWeight: 500,
-    color: '#374151',
     fontSize: '0.875rem'
   },
   titleRow: { display: 'flex', gap: '0.5rem', alignItems: 'center' },
@@ -359,8 +389,6 @@ const styles = {
     whiteSpace: 'nowrap'
   },
   aiBox: {
-    backgroundColor: '#f5f3ff',
-    border: '1px solid #ddd6fe',
     borderRadius: '8px',
     padding: '1rem',
     marginBottom: '1rem'
@@ -368,13 +396,11 @@ const styles = {
   aiTitle: {
     margin: '0 0 0.75rem',
     fontWeight: 600,
-    color: '#7c3aed',
     fontSize: '0.875rem'
   },
   aiLabel: {
     margin: '0 0 0.5rem',
     fontWeight: 500,
-    color: '#374151',
     fontSize: '0.8rem'
   },
   aiList: {
@@ -382,22 +408,17 @@ const styles = {
     paddingLeft: '1.25rem'
   },
   aiItem: {
-    color: '#4b5563',
     fontSize: '0.8rem',
     marginBottom: '0.25rem'
   },
   aiTags: { display: 'flex', gap: '0.5rem', flexWrap: 'wrap' },
   aiTag: {
-    backgroundColor: '#ede9fe',
-    color: '#7c3aed',
     padding: '0.3rem 0.8rem',
     borderRadius: '999px',
     fontSize: '0.8rem',
     fontWeight: 600,
     cursor: 'pointer',
-    transition: 'all 0.2s',
-    fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
-    letterSpacing: '0'
+    transition: 'all 0.2s'
   },
   row: { display: 'flex', gap: '1rem', flexWrap: 'wrap' },
   tagList: { display: 'flex', gap: '0.5rem', flexWrap: 'wrap' },
@@ -416,8 +437,7 @@ const styles = {
   },
   cancelBtn: {
     padding: '0.625rem 1.25rem',
-    backgroundColor: '#f3f4f6',
-    border: '1px solid #d1d5db',
+    border: '1px solid',
     borderRadius: '6px',
     cursor: 'pointer',
     fontSize: '0.875rem'

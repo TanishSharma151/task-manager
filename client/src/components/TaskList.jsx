@@ -70,11 +70,13 @@ export default function TaskList({ tasks, onEdit, onDelete, onMarkDone, onReopen
           )}
 
           <div style={styles.cardFooter}>
-            {task.dueDate && (
-              <span style={styles.dueDate}>
-                Due: {new Date(task.dueDate).toLocaleDateString()}
-              </span>
-            )}
+            <div style={styles.dueDateWrapper}>
+              {task.dueDate && (
+                <span>
+                  Due: {new Date(task.dueDate).toLocaleDateString()}
+                </span>
+              )}
+            </div>
             <div style={styles.tags}>
               {task.tags?.map(tag => (
                 <span key={tag._id} style={styles.tag}>#{tag.name}</span>
@@ -159,10 +161,20 @@ const styles = {
     alignItems: 'center',
     marginTop: '0.75rem',
     flexWrap: 'wrap',
-    gap: '0.5rem'
+    gap: '0.5rem',
+    minHeight: '1.5rem' 
   },
-  dueDate: { color: '#9ca3af', fontSize: '0.8rem' },
-  tags: { display: 'flex', gap: '0.5rem', flexWrap: 'wrap' },
+  dueDateWrapper: { 
+    minHeight: '1rem', // Keeps the row height consistent
+    color: '#9ca3af',
+    fontSize: '0.8rem'
+  },
+  tags: { 
+    display: 'flex', 
+    gap: '0.5rem', 
+    flexWrap: 'wrap',
+    marginLeft: 'auto' // Keeps tags pinned to the right
+  },
   tag: {
     backgroundColor: '#ede9fe',
     color: '#7c3aed',
