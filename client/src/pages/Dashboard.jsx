@@ -5,6 +5,7 @@ import TaskList from '../components/TaskList';
 import TaskForm from '../components/TaskForm';
 import TagManager from '../components/TagManager';
 import Filters from '../components/Filters';
+import Logo from '../components/Logo';
 
 export default function Dashboard() {
   const [dark, setDark] = useState(
@@ -42,7 +43,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  },[filters]);
+  }, [filters]);
 
   const fetchTags = async () => {
     try {
@@ -107,11 +108,14 @@ export default function Dashboard() {
   return (
     <div style={{
       ...styles.container,
-      backgroundColor: dark ? '#0f0f1a' : '#f9fafb',
+      backgroundColor: dark ? ' #13131f' : '#f9fafb',
       color: dark ? '#e5e7eb' : '#1a1a1a'
     }}>
       <div style={styles.header}>
-        <h1 style={styles.logo}>TaskManager</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Logo size={38} />
+          <h1 style={styles.logo}>TaskManager</h1>
+        </div>
         <div style={styles.headerRight}>
           <span style={styles.userName}>Hi, {user?.name}</span>
           <button style={styles.tagBtn} onClick={() => setShowTagManager(!showTagManager)}>
@@ -132,7 +136,7 @@ export default function Dashboard() {
 
       <div style={{
         ...styles.main,
-        backgroundColor: dark ? '#0f0f1a' : 'transparent'
+        backgroundColor: dark ? '#13131f' : 'transparent'
       }}>
         {showTagManager && (
           <TagManager tags={tags} onTagsChange={refreshData} dark={dark} />

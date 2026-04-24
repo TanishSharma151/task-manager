@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -33,6 +34,12 @@ export default function Login() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
+
+        {/* Logo */}
+        <div style={styles.logoRow}>
+          <Logo size={48} />
+        </div>
+
         <h2 style={styles.title}>Welcome Back</h2>
         <p style={styles.subtitle}>Sign in to your account</p>
 
@@ -47,6 +54,7 @@ export default function Login() {
               placeholder="you@example.com"
               value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })}
+              autoComplete="email"
             />
           </div>
           <div style={styles.field}>
@@ -57,6 +65,7 @@ export default function Login() {
               placeholder="••••••••"
               value={form.password}
               onChange={e => setForm({ ...form, password: e.target.value })}
+              autoComplete="current-password"
             />
           </div>
           <button style={styles.button} disabled={loading}>
@@ -78,18 +87,35 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f5f5f5'
+    background: 'linear-gradient(135deg, #ede9fe 0%, #f5f3ff 50%, #eff6ff 100%)'
   },
   card: {
     backgroundColor: '#fff',
     padding: '2rem',
-    borderRadius: '8px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+    borderRadius: '12px',
+    boxShadow: '0 4px 24px rgba(79, 70, 229, 0.12)',
     width: '100%',
     maxWidth: '400px'
   },
-  title: { margin: 0, fontSize: '1.5rem', color: '#1a1a1a' },
-  subtitle: { color: '#666', marginTop: '0.25rem', marginBottom: '1.5rem' },
+  logoRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: '1.25rem'
+  },
+  title: {
+    margin: 0,
+    fontSize: '1.5rem',
+    color: '#1a1a1a',
+    textAlign: 'center',
+    fontWeight: 700
+  },
+  subtitle: {
+    color: '#6b7280',
+    marginTop: '0.25rem',
+    marginBottom: '1.5rem',
+    textAlign: 'center',
+    fontSize: '0.875rem'
+  },
   error: {
     backgroundColor: '#fee2e2',
     color: '#dc2626',
@@ -99,27 +125,39 @@ const styles = {
     fontSize: '0.875rem'
   },
   field: { marginBottom: '1rem' },
-  label: { display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#374151' },
+  label: {
+    display: 'block',
+    marginBottom: '0.5rem',
+    fontWeight: 500,
+    color: '#374151',
+    fontSize: '0.875rem'
+  },
   input: {
     width: '100%',
     padding: '0.625rem',
     border: '1px solid #d1d5db',
-    borderRadius: '6px',
-    fontSize: '1rem',
+    borderRadius: '8px',
+    fontSize: '0.9rem',
     boxSizing: 'border-box',
-    outline: 'none'
+    outline: 'none',
+    transition: 'border-color 0.2s'
   },
   button: {
     width: '100%',
     padding: '0.75rem',
-    backgroundColor: '#4f46e5',
+    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
     color: '#fff',
     border: 'none',
-    borderRadius: '6px',
-    fontSize: '1rem',
+    borderRadius: '8px',
+    fontSize: '0.9rem',
     fontWeight: 600,
     cursor: 'pointer',
     marginTop: '0.5rem'
   },
-  link: { textAlign: 'center', marginTop: '1rem', color: '#666' }
+  link: {
+    textAlign: 'center',
+    marginTop: '1rem',
+    color: '#6b7280',
+    fontSize: '0.875rem'
+  }
 };

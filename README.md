@@ -53,18 +53,15 @@ Get a free API key at https://console.groq.com
 cd server
 npm install
 cp .env.example .env
-# Fill in your values
+# Fill in your values (MONGO_URI, JWT_SECRET, GROQ_API_KEY, CLIENT_URL)
 npm run dev
-```
 
-**Frontend:**
-```bash
+
 cd client
 npm install
 cp .env.example .env
-# Fill in your values
+# Set REACT_APP_API_URL=http://localhost:5000/api
 npm start
-```
 
 **server/.env**
 ```
@@ -83,20 +80,18 @@ REACT_APP_API_URL=http://localhost:5000/api
 
 ## Architecture Decisions
 
-**MongoDB over PostgreSQL** — tasks and tags don't need a rigid relational schema. Storing tag ObjectIds as an array on each task is idiomatic in MongoDB and avoids a junction table. Mongoose's `.populate()` handles the joins cleanly on reads.
-
-**JWT in localStorage** — kept simple for this scope. In a production environment, httpOnly cookies would be the more secure choice to mitigate XSS risk.
-
-**Groq over Gemini** — Gemini's free tier quota ran out quickly during testing. Groq offers unlimited free usage with faster inference for this use case, making it the better fit.
-
-**Vercel + Render** — both deploy directly from GitHub and offer free tiers that comfortably handle this project's load.
+- **MongoDB:** Flexible schema design. Storing tag `ObjectIds` as an array on each task is idiomatic in MongoDB and avoids unnecessary joins.
+- **JWT Authentication:** Managed via `localStorage` for this assignment. In a high-security production environment, I would transition to `httpOnly` cookies to mitigate XSS risks.
+- **CORS Policy:** Restricted to your specific frontend origin via environment variables for security.
+- **Groq over Gemini:** Gemini's free tier quota ran out quickly during testing. Groq offers unlimited free usage with faster inference for this use case, making it the better fit.
+- **Vercel + Render:** Both deploy directly from GitHub and offer free tiers that comfortably handle this project's load.
 
 ---
 
 ## Known Issues
 
 - Render free tier instances spin down after inactivity. The first request after an idle period can take up to 60 seconds to respond while the server wakes up.
-- CORS is currently open to all origins. In a production deployment this would be locked down to the frontend domain only.
+
 
 ---
 
