@@ -76,4 +76,4 @@ At 100,000 active users the first bottleneck would be the MongoDB free tier hitt
 
 ## Feature Deliberately Left Out
 
-**Real-time collaboration** — the ability for multiple users to share a task board and see updates in real time using WebSockets (Socket.io). This would require significant architectural changes — a shared task model, room-based socket events, and conflict resolution logic. Given the timeline, this was intentionally deferred in favour of shipping a solid single-user experience. With one more day I would implement basic Socket.io integration to push task updates to all connected clients on the same board in real time.
+**Automated Reminders & Email Notifications** — The ability to proactively alert users via email as task deadlines approach. This would require a background worker (using node-cron) to scan the database for upcoming dueDate values and trigger an external notification service. Given the timeline, this was deferred to prioritize core AI subtask generation and a secure user experience. With one more day, I would integrate the Resend API (as I have in previous production projects) to handle automated, reliable deadline alerts.
