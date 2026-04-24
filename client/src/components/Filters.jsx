@@ -77,19 +77,31 @@ export default function Filters({ filters, setFilters, tags, dark }) {
 }
 
 const styles = {
+  // container: {
+  //   display: 'flex',
+  //   gap: '0.75rem',
+  //   marginBottom: '1.5rem',
+  //   flexWrap: 'wrap',
+  //   backgroundColor: '#fff',
+  //   padding: '1rem',
+  //   borderRadius: '8px',
+  //   boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+  // },
+
   container: {
-    display: 'flex',
-    gap: '0.75rem',
-    marginBottom: '1.5rem',
-    flexWrap: 'wrap',
-    backgroundColor: '#fff',
-    padding: '1rem',
-    borderRadius: '8px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-  },
+  display: 'flex',
+  flexWrap: 'wrap', // This makes it responsive!
+  gap: '0.75rem',
+  marginBottom: '1.5rem',
+  backgroundColor: '#1a1a2e',
+  padding: '1rem',
+  borderRadius: '12px',
+  border: '1px solid #2d2d44',
+  alignItems: 'center'
+},
   search: {
-    flex: 1,
-    minWidth: '200px',
+    flex: '1 1 200px',
+    //minWidth: '200px',
     padding: '0.625rem',
     border: '1px solid #d1d5db',
     borderRadius: '6px',
@@ -97,6 +109,7 @@ const styles = {
     outline: 'none'
   },
   select: {
+    flex: '1 1 120px',
     padding: '0.625rem',
     border: '1px solid #d1d5db',
     borderRadius: '6px',

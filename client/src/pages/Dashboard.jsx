@@ -207,48 +207,83 @@ const styles = {
     backgroundColor: '#f9fafb',
     transition: 'all 0.3s ease'
   },
-  header: {
+ header: {
     background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-    padding: '1rem 2rem',
+    padding: '0.75rem 1rem', // 1. Tighter padding saves vertical space
     display: 'flex',
+    flexWrap: 'nowrap', // 2. FORCE single row
     justifyContent: 'space-between',
     alignItems: 'center',
-    boxShadow: '0 4px 20px rgba(79, 70, 229, 0.3)'
+    position: 'sticky',
+    top: 0,
+    zIndex: 1000,
+    width: '100%',
+    boxSizing: 'border-box',
+    gap: '0.5rem'
   },
   logo: {
     color: '#fff',
     margin: 0,
-    fontSize: '1.5rem',
+    fontSize: '1.25rem', // 3. Shrunk slightly from 1.5rem to fit mobile screens
     fontWeight: 700,
-    letterSpacing: '-0.5px'
+    letterSpacing: '-0.5px',
+    whiteSpace: 'nowrap' // Keeps logo on one line
   },
-  headerRight: { display: 'flex', alignItems: 'center', gap: '1rem' },
+  headerRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.4rem' // 4. Tighter spacing between buttons
+  },
   userName: {
     color: '#e0e7ff',
-    fontSize: '0.875rem',
-    fontWeight: 500
+    fontSize: '0.8rem',
+    fontWeight: 500,
+    display: 'none',
   },
+  // tagBtn: {
+  //   padding: '0.5rem 1rem',
+  //   backgroundColor: 'rgba(255,255,255,0.15)',
+  //   color: '#fff',
+  //   border: '1px solid rgba(255,255,255,0.3)',
+  //   borderRadius: '8px',
+  //   cursor: 'pointer',
+  //   fontSize: '0.875rem',
+  //   fontWeight: 500,
+  //   backdropFilter: 'blur(10px)'
+  // },
   tagBtn: {
-    padding: '0.5rem 1rem',
+    padding: '0.35rem 0.6rem', // 5. Compact button size
     backgroundColor: 'rgba(255,255,255,0.15)',
     color: '#fff',
     border: '1px solid rgba(255,255,255,0.3)',
-    borderRadius: '8px',
+    borderRadius: '6px',
     cursor: 'pointer',
-    fontSize: '0.875rem',
+    fontSize: '0.75rem', // Compact text
     fontWeight: 500,
-    backdropFilter: 'blur(10px)'
+    whiteSpace: 'nowrap'
   },
+  // logoutBtn: {
+  //   padding: '0.5rem 1rem',
+  //   backgroundColor: '#fff',
+  //   color: '#4f46e5',
+  //   border: 'none',
+  //   borderRadius: '8px',
+  //   cursor: 'pointer',
+  //   fontWeight: 600,
+  //   fontSize: '0.875rem',
+  //   boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+  // },
   logoutBtn: {
-    padding: '0.5rem 1rem',
+    padding: '0.35rem 0.6rem', // 5. Compact button size
     backgroundColor: '#fff',
     color: '#4f46e5',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '6px',
     cursor: 'pointer',
     fontWeight: 600,
-    fontSize: '0.875rem',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    fontSize: '0.75rem', // Compact text
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    whiteSpace: 'nowrap'
   },
   main: {
     maxWidth: '960px',
@@ -257,6 +292,7 @@ const styles = {
   },
   taskHeader: {
     display: 'flex',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '1.25rem'
