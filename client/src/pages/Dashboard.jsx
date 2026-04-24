@@ -56,7 +56,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchTasks();
-  }, [filters]);
+  }, [fetchTasks]);
 
   useEffect(() => {
     fetchTags();
@@ -108,36 +108,39 @@ export default function Dashboard() {
   return (
     <div style={{
       ...styles.container,
-      backgroundColor: dark ? ' #13131f' : '#f9fafb',
-      color: dark ? '#e5e7eb' : '#1a1a1a'
+      backgroundColor: dark ? '#0a0a14' : '#f8fafc',
+      color: dark ? '#f1f5f9' : '#0f172a'
     }}>
-      <div style={styles.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Logo size={38} />
-          <h1 style={styles.logo}>TaskManager</h1>
+      {/* PREMIUM STICKY NAVBAR */}
+      <header style={styles.header}>
+        <div style={styles.headerInner}>
+          <div style={styles.headerLeft}>
+            <Logo size={40} />
+            <h1 style={styles.logo}>TaskManager</h1>
+          </div>
+          
+          <div style={styles.headerRight}>
+            <span style={styles.userName}>Hi, {user?.name}</span>
+            <div style={styles.divider} />
+            <button style={styles.tagBtn} onClick={() => setShowTagManager(!showTagManager)}>
+              Tags
+            </button>
+            <button style={styles.tagBtn} onClick={() => {
+              const newDark = !dark;
+              setDark(newDark);
+              localStorage.setItem('darkMode', newDark);
+            }}>
+              {dark ? '☀️' : '🌙'}
+            </button>
+            <button style={styles.logoutBtn} onClick={logout}>
+              Logout
+            </button>
+          </div>
         </div>
-        <div style={styles.headerRight}>
-          <span style={styles.userName}>Hi, {user?.name}</span>
-          <button style={styles.tagBtn} onClick={() => setShowTagManager(!showTagManager)}>
-            Tags
-          </button>
-          <button style={styles.tagBtn} onClick={() => {
-            const newDark = !dark;
-            setDark(newDark);
-            localStorage.setItem('darkMode', newDark);
-          }}>
-            {dark ? '☀️ Light' : '🌙 Dark'}
-          </button>
-          <button style={styles.logoutBtn} onClick={logout}>
-            Logout
-          </button>
-        </div>
-      </div>
+      </header>
 
-      <div style={{
-        ...styles.main,
-        backgroundColor: dark ? '#13131f' : 'transparent'
-      }}>
+      {/* CENTERED MAIN CONTENT */}
+      <main style={styles.main}>
         {showTagManager && (
           <TagManager tags={tags} onTagsChange={refreshData} dark={dark} />
         )}
@@ -145,12 +148,7 @@ export default function Dashboard() {
         <Filters filters={filters} setFilters={setFilters} tags={tags} dark={dark} />
 
         <div style={styles.taskHeader}>
-          <h2 style={{
-            ...styles.taskTitle,
-            color: dark ? '#e5e7eb' : '#1a1a1a'
-          }}>
-            My Tasks
-          </h2>
+          <h2 style={styles.taskTitle}>My Tasks</h2>
           <button style={styles.addBtn} onClick={() => {
             setEditTask(null);
             setShowTaskForm(true);
@@ -180,9 +178,8 @@ export default function Dashboard() {
         ) : tasks.length === 0 ? (
           <div style={{
             ...styles.empty,
-            backgroundColor: dark ? '#1a1a2e' : '#fff',
-            borderColor: dark ? '#2d2d44' : '#e5e7eb',
-            color: dark ? '#9ca3af' : '#9ca3af'
+            backgroundColor: dark ? '#151525' : '#fff',
+            borderColor: dark ? '#2a2a40' : '#e2e8f0',
           }}>
             <p>No tasks found. Create your first task!</p>
           </div>
@@ -196,146 +193,140 @@ export default function Dashboard() {
             dark={dark}
           />
         )}
-      </div>
+      </main>
     </div>
   );
 }
 
 const styles = {
   container: {
-    minHeight: '100vh',
-    backgroundColor: '#f9fafb',
+    minHeight: '100dvh',
+    display: 'flex',
+    flexDirection: 'column',
     transition: 'all 0.3s ease'
   },
- header: {
+  header: {
     background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-    padding: '0.75rem 1rem', // 1. Tighter padding saves vertical space
-    display: 'flex',
-    flexWrap: 'nowrap', // 2. FORCE single row
-    justifyContent: 'space-between',
-    alignItems: 'center',
     position: 'sticky',
     top: 0,
     zIndex: 1000,
     width: '100%',
+    boxShadow: '0 4px 25px rgba(0,0,0, 0.2)',
     boxSizing: 'border-box',
-    gap: '0.5rem'
+  },
+  headerInner: {
+    width: '100%',
+    padding: '1rem 3rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    boxSizing: 'border-box',
+  },
+  headerLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem'
   },
   logo: {
     color: '#fff',
     margin: 0,
-    fontSize: '1.25rem', // 3. Shrunk slightly from 1.5rem to fit mobile screens
-    fontWeight: 700,
-    letterSpacing: '-0.5px',
-    whiteSpace: 'nowrap' // Keeps logo on one line
+    fontSize: '1.85rem',
+    fontWeight: 900,
+    letterSpacing: '-1.5px',
+    whiteSpace: 'nowrap',
+    textShadow: '0 2px 10px rgba(0,0,0,0.1)'
   },
-  headerRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.4rem' // 4. Tighter spacing between buttons
+  headerRight: { 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: '1.25rem' 
   },
   userName: {
-    color: '#e0e7ff',
-    fontSize: '0.8rem',
-    fontWeight: 500,
-    display: 'none',
+    color: '#f0f4ff',
+    fontSize: '1.1rem',
+    fontWeight: 800,
+    whiteSpace: 'nowrap',
   },
-  // tagBtn: {
-  //   padding: '0.5rem 1rem',
-  //   backgroundColor: 'rgba(255,255,255,0.15)',
-  //   color: '#fff',
-  //   border: '1px solid rgba(255,255,255,0.3)',
-  //   borderRadius: '8px',
-  //   cursor: 'pointer',
-  //   fontSize: '0.875rem',
-  //   fontWeight: 500,
-  //   backdropFilter: 'blur(10px)'
-  // },
+  divider: {
+    width: '1px',
+    height: '24px',
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    margin: '0 0.5rem'
+  },
   tagBtn: {
-    padding: '0.35rem 0.6rem', // 5. Compact button size
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    padding: '0.65rem 1.25rem',
+    backgroundColor: 'rgba(255,255,255,0.12)',
     color: '#fff',
-    border: '1px solid rgba(255,255,255,0.3)',
-    borderRadius: '6px',
+    border: '1px solid rgba(255,255,255,0.25)',
+    borderRadius: '12px',
     cursor: 'pointer',
-    fontSize: '0.75rem', // Compact text
-    fontWeight: 500,
-    whiteSpace: 'nowrap'
+    fontSize: '0.95rem',
+    fontWeight: 700,
+    transition: 'all 0.2s ease',
+    backdropFilter: 'blur(8px)',
   },
-  // logoutBtn: {
-  //   padding: '0.5rem 1rem',
-  //   backgroundColor: '#fff',
-  //   color: '#4f46e5',
-  //   border: 'none',
-  //   borderRadius: '8px',
-  //   cursor: 'pointer',
-  //   fontWeight: 600,
-  //   fontSize: '0.875rem',
-  //   boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-  // },
   logoutBtn: {
-    padding: '0.35rem 0.6rem', // 5. Compact button size
+    padding: '0.65rem 1.5rem',
     backgroundColor: '#fff',
     color: '#4f46e5',
     border: 'none',
-    borderRadius: '6px',
+    borderRadius: '12px',
     cursor: 'pointer',
-    fontWeight: 600,
-    fontSize: '0.75rem', // Compact text
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    whiteSpace: 'nowrap'
+    fontWeight: 900,
+    fontSize: '0.95rem',
+    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.15)',
   },
   main: {
-    maxWidth: '960px',
+    maxWidth: '1100px',
+    width: '100%',
     margin: '0 auto',
-    padding: '2rem 1rem'
+    padding: '2.5rem 1.5rem',
+    boxSizing: 'border-box'
   },
   taskHeader: {
     display: 'flex',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '1.25rem'
+    marginBottom: '2rem'
   },
   taskTitle: {
     margin: 0,
-    color: '#1a1a1a',
-    fontSize: '1.25rem',
-    fontWeight: 700
+    fontSize: '1.75rem',
+    fontWeight: 800,
+    letterSpacing: '-0.5px'
   },
   addBtn: {
-    padding: '0.625rem 1.25rem',
-    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+    padding: '0.75rem 1.5rem',
+    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
     color: '#fff',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '12px',
     cursor: 'pointer',
-    fontWeight: 600,
-    fontSize: '0.875rem',
-    boxShadow: '0 4px 12px rgba(79, 70, 229, 0.4)'
+    fontWeight: 700,
+    fontSize: '0.9rem',
+    boxShadow: '0 10px 15px -3px rgba(99, 102, 241, 0.3)',
   },
   error: {
-    backgroundColor: '#fee2e2',
-    color: '#dc2626',
-    padding: '0.75rem 1rem',
-    borderRadius: '8px',
-    marginBottom: '1rem',
-    fontSize: '0.875rem',
-    border: '1px solid #fecaca'
+    backgroundColor: '#fef2f2',
+    color: '#ef4444',
+    padding: '1rem',
+    borderRadius: '12px',
+    marginBottom: '1.5rem',
+    fontSize: '0.9rem',
+    border: '1px solid #fee2e2',
+    fontWeight: 500
   },
   center: {
     textAlign: 'center',
-    padding: '3rem',
-    color: '#9ca3af',
-    fontSize: '0.875rem'
+    padding: '5rem',
+    color: '#94a3b8',
+    fontSize: '1rem'
   },
   empty: {
     textAlign: 'center',
-    padding: '4rem 2rem',
-    color: '#9ca3af',
-    backgroundColor: '#fff',
-    borderRadius: '12px',
-    border: '2px dashed #e5e7eb',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+    padding: '5rem 2rem',
+    borderRadius: '16px',
+    border: '2px dashed #e2e8f0',
+    fontSize: '1.1rem'
   }
 };
