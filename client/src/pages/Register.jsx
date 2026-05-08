@@ -5,30 +5,45 @@ import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 
 export default function Register() {
+
+  // Form state (name, email, password)
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+
+  // UI states
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+
+  const { login } = useAuth(); // reuse login after register
   const navigate = useNavigate();
 
+  // Handle register
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    // Basic validation
     if (!form.name || !form.email || !form.password) {
       return setError('All fields are required');
     }
+
     if (form.name.trim().length === 0) {
       return setError('Name cannot be empty');
     }
+
     if (form.password.length < 6) {
       return setError('Password must be at least 6 characters');
     }
 
     try {
       setLoading(true);
+
+      // Call backend register API
       const res = await axios.post('/auth/register', form);
+
+      // Auto login after successful signup
       login(res.data.user, res.data.token);
+
+      // Redirect to dashboard
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed');
@@ -41,7 +56,7 @@ export default function Register() {
     <div style={styles.container}>
       <div style={styles.card}>
 
-        {/* Logo */}
+        {/* App logo */}
         <div style={styles.logoRow}>
           <Logo size={48} />
         </div>
@@ -49,9 +64,12 @@ export default function Register() {
         <h2 style={styles.title}>Create Account</h2>
         <p style={styles.subtitle}>Start managing your tasks</p>
 
+        {/* Error message */}
         {error && <div style={styles.error}>{error}</div>}
 
         <form onSubmit={handleSubmit}>
+
+          {/* Name input */}
           <div style={styles.field}>
             <label style={styles.label}>Name</label>
             <input
@@ -63,6 +81,8 @@ export default function Register() {
               autoComplete="name"
             />
           </div>
+
+          {/* Email input */}
           <div style={styles.field}>
             <label style={styles.label}>Email</label>
             <input
@@ -74,6 +94,8 @@ export default function Register() {
               autoComplete="email"
             />
           </div>
+
+          {/* Password input */}
           <div style={styles.field}>
             <label style={styles.label}>Password</label>
             <input
@@ -85,14 +107,18 @@ export default function Register() {
               autoComplete="new-password"
             />
           </div>
+
+          {/* Submit */}
           <button style={styles.button} disabled={loading}>
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
 
+        {/* Redirect to login */}
         <p style={styles.link}>
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
+
       </div>
     </div>
   );

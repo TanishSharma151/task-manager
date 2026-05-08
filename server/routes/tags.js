@@ -8,9 +8,10 @@ const {
   deleteTag
 } = require('../controllers/tagController');
 
-router.get('/', auth, getTags);
-router.post('/', auth, createTag);
-router.put('/:id', auth, updateTag);
-router.delete('/:id', auth, deleteTag);
+// All tag routes are protected → require authentication
+router.get('/', auth, getTags);       // fetch user's tags
+router.post('/', auth, createTag);    // create new tag
+router.put('/:id', auth, updateTag);  // update existing tag
+router.delete('/:id', auth, deleteTag); // delete tag
 
 module.exports = router;

@@ -1,21 +1,22 @@
 const Tag = require('../models/Tag');
 const Task = require('../models/Task');
 
-
 exports.getTags = async (req, res) => {
   try {
+    // Fetch only current user's tags (data isolation)
     const tags = await Tag.find({ userId: req.user.id }).sort({ createdAt: -1 });
+
     res.status(200).json(tags);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 };
 
-
 exports.createTag = async (req, res) => {
   try {
     const { name } = req.body;
 
+    // Basic validation
     if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({ error: 'Tag name is required' });
     }
@@ -24,6 +25,7 @@ exports.createTag = async (req, res) => {
       return res.status(400).json({ error: 'Tag name cannot exceed 50 characters' });
     }
 
+    // Ensure tag is unique per user
     const existing = await Tag.findOne({
       name: name.trim(),
       userId: req.user.id
@@ -34,17 +36,18 @@ exports.createTag = async (req, res) => {
     }
 
     const tag = await Tag.create({ name: name.trim(), userId: req.user.id });
+
     res.status(201).json(tag);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 };
 
-
 exports.updateTag = async (req, res) => {
   try {
     const { name } = req.body;
 
+    // Basic validation
     if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({ error: 'Tag name is required' });
     }
@@ -53,12 +56,14 @@ exports.updateTag = async (req, res) => {
       return res.status(400).json({ error: 'Tag name cannot exceed 50 characters' });
     }
 
+    // Check ownership of tag
     const tag = await Tag.findOne({ _id: req.params.id, userId: req.user.id });
 
     if (!tag) {
       return res.status(404).json({ error: 'Tag not found' });
     }
 
+    // Prevent duplicate names (excluding current tag)
     const duplicate = await Tag.findOne({
       name: name.trim(),
       userId: req.user.id,
@@ -78,21 +83,24 @@ exports.updateTag = async (req, res) => {
   }
 };
 
-
 exports.deleteTag = async (req, res) => {
   try {
     const userId = req.user.id;
     const tagId = req.params.id;
 
+    // Ensure tag belongs to user
     const tag = await Tag.findOne({ _id: tagId, userId });
     if (!tag) return res.status(404).json({ error: 'Tag not found' });
 
+    // Remove tag references from all user's tasks
     await Task.updateMany(
       { userId, tags: tagId },
       { $pull: { tags: tagId } }
     );
 
+    // Delete tag itself
     await Tag.findByIdAndDelete(tagId);
+
     res.status(200).json({ message: 'Tag deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });

@@ -4,6 +4,7 @@ export default function Filters({ filters, setFilters, tags, dark }) {
       ...styles.container,
       backgroundColor: dark ? '#1a1a2e' : '#fff',
     }}>
+      {/* Search input → updates search filter */}
       <input
         style={{
           ...styles.search,
@@ -16,6 +17,8 @@ export default function Filters({ filters, setFilters, tags, dark }) {
         value={filters.search}
         onChange={e => setFilters({ ...filters, search: e.target.value })}
       />
+
+      {/* Filter by status */}
       <select
         style={{
           ...styles.select,
@@ -31,6 +34,8 @@ export default function Filters({ filters, setFilters, tags, dark }) {
         <option value="in-progress">In Progress</option>
         <option value="done">Done</option>
       </select>
+
+      {/* Filter by priority */}
       <select
         style={{
           ...styles.select,
@@ -46,6 +51,8 @@ export default function Filters({ filters, setFilters, tags, dark }) {
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </select>
+
+      {/* Filter by tag */}
       <select
         style={{
           ...styles.select,
@@ -61,6 +68,8 @@ export default function Filters({ filters, setFilters, tags, dark }) {
           <option key={tag._id} value={tag._id}>{tag.name}</option>
         ))}
       </select>
+
+      {/* Reset all filters */}
       <button
         style={{
           ...styles.clearBtn,
@@ -77,37 +86,28 @@ export default function Filters({ filters, setFilters, tags, dark }) {
 }
 
 const styles = {
-  // container: {
-  //   display: 'flex',
-  //   gap: '0.75rem',
-  //   marginBottom: '1.5rem',
-  //   flexWrap: 'wrap',
-  //   backgroundColor: '#fff',
-  //   padding: '1rem',
-  //   borderRadius: '8px',
-  //   boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-  // },
-
+  // Responsive container for all filters
   container: {
-  display: 'flex',
-  flexWrap: 'wrap', // This makes it responsive!
-  gap: '0.75rem',
-  marginBottom: '1.5rem',
-  backgroundColor: '#1a1a2e',
-  padding: '1rem',
-  borderRadius: '12px',
-  border: '1px solid #2d2d44',
-  alignItems: 'center'
-},
+    display: 'flex',
+    flexWrap: 'wrap', // makes layout responsive
+    gap: '0.75rem',
+    marginBottom: '1.5rem',
+    backgroundColor: '#1a1a2e',
+    padding: '1rem',
+    borderRadius: '12px',
+    border: '1px solid #2d2d44',
+    alignItems: 'center'
+  },
+
   search: {
     flex: '1 1 200px',
-    //minWidth: '200px',
     padding: '0.625rem',
     border: '1px solid #d1d5db',
     borderRadius: '6px',
     fontSize: '0.875rem',
     outline: 'none'
   },
+
   select: {
     flex: '1 1 120px',
     padding: '0.625rem',
@@ -118,6 +118,7 @@ const styles = {
     backgroundColor: '#fff',
     cursor: 'pointer'
   },
+
   clearBtn: {
     padding: '0.625rem 1rem',
     backgroundColor: '#f3f4f6',

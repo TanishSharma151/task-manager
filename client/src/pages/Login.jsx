@@ -5,24 +5,37 @@ import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 
 export default function Login() {
+
+  // Form state (email + password)
   const [form, setForm] = useState({ email: '', password: '' });
+
+  // UI states
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
 
+  const { login } = useAuth(); // global auth context
+  const navigate = useNavigate(); // for redirect
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    // Basic validation
     if (!form.email || !form.password) {
       return setError('All fields are required');
     }
 
     try {
       setLoading(true);
+
+      // Call backend login API
       const res = await axios.post('/auth/login', form);
+
+      // Save user + token (context + localStorage)
       login(res.data.user, res.data.token);
+
+      // Redirect to dashboard
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');
@@ -35,7 +48,7 @@ export default function Login() {
     <div style={styles.container}>
       <div style={styles.card}>
 
-        {/* Logo */}
+        {/* App logo */}
         <div style={styles.logoRow}>
           <Logo size={48} />
         </div>
@@ -43,9 +56,12 @@ export default function Login() {
         <h2 style={styles.title}>Welcome Back</h2>
         <p style={styles.subtitle}>Sign in to your account</p>
 
+        {/* Error message */}
         {error && <div style={styles.error}>{error}</div>}
 
         <form onSubmit={handleSubmit}>
+
+          {/* Email input */}
           <div style={styles.field}>
             <label style={styles.label}>Email</label>
             <input
@@ -57,6 +73,8 @@ export default function Login() {
               autoComplete="email"
             />
           </div>
+
+          {/* Password input */}
           <div style={styles.field}>
             <label style={styles.label}>Password</label>
             <input
@@ -68,19 +86,24 @@ export default function Login() {
               autoComplete="current-password"
             />
           </div>
+
+          {/* Submit button */}
           <button style={styles.button} disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
+        {/* Redirect link */}
         <p style={styles.link}>
           Don't have an account? <Link to="/register">Register</Link>
         </p>
+
       </div>
     </div>
   );
 }
 
+// Styles (kept inline for simplicity, no external CSS dependency)
 const styles = {
   container: {
     minHeight: '100vh',

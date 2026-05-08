@@ -11,7 +11,11 @@ export default function Dashboard() {
   const [dark, setDark] = useState(
     localStorage.getItem('darkMode') === 'true'
   );
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
   const { user, logout } = useAuth();
+
   const [tasks, setTasks] = useState([]);
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,24 +23,38 @@ export default function Dashboard() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
   const [editTask, setEditTask] = useState(null);
+
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
     tag: '',
-    search: ''
+    search: '',
   });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
+
       const params = new URLSearchParams();
+
       if (filters.status) params.append('status', filters.status);
       if (filters.priority) params.append('priority', filters.priority);
       if (filters.tag) params.append('tag', filters.tag);
       if (filters.search) params.append('search', filters.search);
 
       const res = await axios.get(`/tasks?${params.toString()}`);
+
       setTasks(res.data);
     } catch (err) {
       setError('Failed to load tasks');
@@ -75,6 +93,7 @@ export default function Dashboard() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this task?')) return;
+
     try {
       await axios.delete(`/tasks/${id}`);
       fetchTasks();
@@ -105,54 +124,302 @@ export default function Dashboard() {
     await Promise.all([fetchTasks(), fetchTags()]);
   };
 
-  return (
-    <div style={{
-      ...styles.container,
+  const styles = {
+    container: {
+      minHeight: '100dvh',
+      display: 'flex',
+      flexDirection: 'column',
+      overflowX: 'hidden',
       backgroundColor: dark ? '#0a0a14' : '#f8fafc',
-      color: dark ? '#f1f5f9' : '#0f172a'
-    }}>
-      {/* PREMIUM STICKY NAVBAR */}
+      color: dark ? '#f1f5f9' : '#0f172a',
+    },
+
+    header: {
+      background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      zIndex: 1000,
+      boxShadow: '0 4px 25px rgba(0,0,0,0.2)',
+    },
+
+    headerInner: {
+      maxWidth: '1400px',
+      margin: '0 auto',
+      padding: isMobile ? '0.9rem 1rem' : '1rem 2rem',
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      justifyContent: 'space-between',
+      alignItems: isMobile ? 'stretch' : 'center',
+      gap: isMobile ? '0.8rem' : '1rem',
+    },
+
+    headerTop: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '100%',
+    },
+
+    headerLeft: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.7rem',
+    },
+
+    logo: {
+      color: '#fff',
+      margin: 0,
+      fontSize: isMobile ? '1.45rem' : '1.85rem',
+      fontWeight: 900,
+      letterSpacing: '-1px',
+      lineHeight: 1,
+    },
+
+    mobileUser: {
+      color: '#f0f4ff',
+      fontSize: '0.78rem',
+      fontWeight: 600,
+      opacity: 0.9,
+      marginTop: '0.15rem',
+    },
+
+    desktopUser: {
+      color: '#f0f4ff',
+      fontSize: '1rem',
+      fontWeight: 700,
+      whiteSpace: 'nowrap',
+    },
+
+    headerRight: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: isMobile ? '0.7rem' : '1rem',
+      width: isMobile ? '100%' : 'auto',
+    },
+
+    divider: {
+      width: '1px',
+      height: '24px',
+      backgroundColor: 'rgba(255,255,255,0.3)',
+    },
+
+    tagBtn: {
+      flex: isMobile ? 1 : 'unset',
+      padding: isMobile ? '0.75rem 0.5rem' : '0.65rem 1.25rem',
+      backgroundColor: 'rgba(255,255,255,0.12)',
+      color: '#fff',
+      border: '1px solid rgba(255,255,255,0.2)',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontSize: isMobile ? '0.82rem' : '0.9rem',
+      fontWeight: 700,
+      backdropFilter: 'blur(8px)',
+    },
+
+    logoutBtn: {
+      flex: isMobile ? 1 : 'unset',
+      padding: isMobile ? '0.75rem 0.5rem' : '0.65rem 1.5rem',
+      backgroundColor: '#fff',
+      color: '#4f46e5',
+      border: 'none',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontWeight: 900,
+      fontSize: isMobile ? '0.82rem' : '0.9rem',
+    },
+
+    main: {
+      maxWidth: '1100px',
+      width: '100%',
+      margin: '0 auto',
+      padding: isMobile
+        ? '8.5rem 1rem 1rem'
+        : '7rem 1.5rem 2.5rem',
+      boxSizing: 'border-box',
+    },
+
+    taskHeader: {
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      justifyContent: 'space-between',
+      alignItems: isMobile ? 'stretch' : 'center',
+      gap: '1rem',
+      marginBottom: '2rem',
+    },
+
+    taskTitle: {
+      margin: 0,
+      fontSize: isMobile ? '1.5rem' : '1.75rem',
+      fontWeight: 800,
+    },
+
+    addBtn: {
+      padding: '0.75rem 1.5rem',
+      width: isMobile ? '100%' : 'auto',
+      background:
+        'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontWeight: 700,
+      fontSize: '0.9rem',
+    },
+
+    error: {
+      backgroundColor: '#fef2f2',
+      color: '#ef4444',
+      padding: '1rem',
+      borderRadius: '12px',
+      marginBottom: '1.5rem',
+      border: '1px solid #fee2e2',
+    },
+
+    center: {
+      textAlign: 'center',
+      padding: '5rem 1rem',
+      color: '#94a3b8',
+    },
+
+    empty: {
+      textAlign: 'center',
+      padding: '5rem 2rem',
+      borderRadius: '16px',
+      border: '2px dashed #e2e8f0',
+      backgroundColor: dark ? '#151525' : '#fff',
+    },
+  };
+
+  return (
+    <div style={styles.container}>
       <header style={styles.header}>
         <div style={styles.headerInner}>
-          <div style={styles.headerLeft}>
-            <Logo size={40} />
-            <h1 style={styles.logo}>TaskManager</h1>
+          <div style={styles.headerTop}>
+            <div style={styles.headerLeft}>
+              <Logo size={40} />
+
+              <div>
+                <h1 style={styles.logo}>TaskManager</h1>
+
+                {isMobile && (
+                  <span style={styles.mobileUser}>
+                    Hi, {user?.name}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {!isMobile && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                }}
+              >
+                <span style={styles.desktopUser}>
+                  Hi, {user?.name?.split(' ')[0]}
+                </span>
+
+                <div style={styles.divider} />
+
+                <button
+                  style={styles.tagBtn}
+                  onClick={() =>
+                    setShowTagManager(!showTagManager)
+                  }
+                >
+                  Tags
+                </button>
+
+                <button
+                  style={styles.tagBtn}
+                  onClick={() => {
+                    const newDark = !dark;
+                    setDark(newDark);
+                    localStorage.setItem(
+                      'darkMode',
+                      newDark
+                    );
+                  }}
+                >
+                  {dark ? '☀️' : '🌙'}
+                </button>
+
+                <button
+                  style={styles.logoutBtn}
+                  onClick={logout}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
-          
-          <div style={styles.headerRight}>
-            <span style={styles.userName}>Hi, {user?.name}</span>
-            <div style={styles.divider} />
-            <button style={styles.tagBtn} onClick={() => setShowTagManager(!showTagManager)}>
-              Tags
-            </button>
-            <button style={styles.tagBtn} onClick={() => {
-              const newDark = !dark;
-              setDark(newDark);
-              localStorage.setItem('darkMode', newDark);
-            }}>
-              {dark ? '☀️' : '🌙'}
-            </button>
-            <button style={styles.logoutBtn} onClick={logout}>
-              Logout
-            </button>
-          </div>
+
+          {isMobile && (
+            <div style={styles.headerRight}>
+              <button
+                style={styles.tagBtn}
+                onClick={() =>
+                  setShowTagManager(!showTagManager)
+                }
+              >
+                Tags
+              </button>
+
+              <button
+                style={styles.tagBtn}
+                onClick={() => {
+                  const newDark = !dark;
+                  setDark(newDark);
+                  localStorage.setItem(
+                    'darkMode',
+                    newDark
+                  );
+                }}
+              >
+                {dark ? '☀️' : '🌙'}
+              </button>
+
+              <button
+                style={styles.logoutBtn}
+                onClick={logout}
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
-      {/* CENTERED MAIN CONTENT */}
       <main style={styles.main}>
         {showTagManager && (
-          <TagManager tags={tags} onTagsChange={refreshData} dark={dark} />
+          <TagManager
+            tags={tags}
+            onTagsChange={refreshData}
+            dark={dark}
+          />
         )}
 
-        <Filters filters={filters} setFilters={setFilters} tags={tags} dark={dark} />
+        <Filters
+          filters={filters}
+          setFilters={setFilters}
+          tags={tags}
+          dark={dark}
+        />
 
         <div style={styles.taskHeader}>
           <h2 style={styles.taskTitle}>My Tasks</h2>
-          <button style={styles.addBtn} onClick={() => {
-            setEditTask(null);
-            setShowTaskForm(true);
-          }}>
+
+          <button
+            style={styles.addBtn}
+            onClick={() => {
+              setEditTask(null);
+              setShowTaskForm(true);
+            }}
+          >
             + Add Task
           </button>
         </div>
@@ -176,11 +443,7 @@ export default function Dashboard() {
         {loading ? (
           <div style={styles.center}>Loading tasks...</div>
         ) : tasks.length === 0 ? (
-          <div style={{
-            ...styles.empty,
-            backgroundColor: dark ? '#151525' : '#fff',
-            borderColor: dark ? '#2a2a40' : '#e2e8f0',
-          }}>
+          <div style={styles.empty}>
             <p>No tasks found. Create your first task!</p>
           </div>
         ) : (
@@ -197,136 +460,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: '100dvh',
-    display: 'flex',
-    flexDirection: 'column',
-    transition: 'all 0.3s ease'
-  },
-  header: {
-    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-    position: 'sticky',
-    top: 0,
-    zIndex: 1000,
-    width: '100%',
-    boxShadow: '0 4px 25px rgba(0,0,0, 0.2)',
-    boxSizing: 'border-box',
-  },
-  headerInner: {
-    width: '100%',
-    padding: '1rem 3rem',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-  },
-  headerLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem'
-  },
-  logo: {
-    color: '#fff',
-    margin: 0,
-    fontSize: '1.85rem',
-    fontWeight: 900,
-    letterSpacing: '-1.5px',
-    whiteSpace: 'nowrap',
-    textShadow: '0 2px 10px rgba(0,0,0,0.1)'
-  },
-  headerRight: { 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '1.25rem' 
-  },
-  userName: {
-    color: '#f0f4ff',
-    fontSize: '1.1rem',
-    fontWeight: 800,
-    whiteSpace: 'nowrap',
-  },
-  divider: {
-    width: '1px',
-    height: '24px',
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    margin: '0 0.5rem'
-  },
-  tagBtn: {
-    padding: '0.65rem 1.25rem',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    color: '#fff',
-    border: '1px solid rgba(255,255,255,0.25)',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    fontSize: '0.95rem',
-    fontWeight: 700,
-    transition: 'all 0.2s ease',
-    backdropFilter: 'blur(8px)',
-  },
-  logoutBtn: {
-    padding: '0.65rem 1.5rem',
-    backgroundColor: '#fff',
-    color: '#4f46e5',
-    border: 'none',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    fontWeight: 900,
-    fontSize: '0.95rem',
-    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.15)',
-  },
-  main: {
-    maxWidth: '1100px',
-    width: '100%',
-    margin: '0 auto',
-    padding: '2.5rem 1.5rem',
-    boxSizing: 'border-box'
-  },
-  taskHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '2rem'
-  },
-  taskTitle: {
-    margin: 0,
-    fontSize: '1.75rem',
-    fontWeight: 800,
-    letterSpacing: '-0.5px'
-  },
-  addBtn: {
-    padding: '0.75rem 1.5rem',
-    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    fontWeight: 700,
-    fontSize: '0.9rem',
-    boxShadow: '0 10px 15px -3px rgba(99, 102, 241, 0.3)',
-  },
-  error: {
-    backgroundColor: '#fef2f2',
-    color: '#ef4444',
-    padding: '1rem',
-    borderRadius: '12px',
-    marginBottom: '1.5rem',
-    fontSize: '0.9rem',
-    border: '1px solid #fee2e2',
-    fontWeight: 500
-  },
-  center: {
-    textAlign: 'center',
-    padding: '5rem',
-    color: '#94a3b8',
-    fontSize: '1rem'
-  },
-  empty: {
-    textAlign: 'center',
-    padding: '5rem 2rem',
-    borderRadius: '16px',
-    border: '2px dashed #e2e8f0',
-    fontSize: '1.1rem'
-  }
-};
